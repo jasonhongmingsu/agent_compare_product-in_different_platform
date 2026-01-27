@@ -1,0 +1,15 @@
+# 核心框架
+langgraph>=0.2.0
+langchain>=0.2.0
+langchain-openai>=0.1.0
+
+# 工具与平台
+langchain-community
+tavily-python
+
+# 环境管理与数据校验
+python-dotenv
+pydantic>=2.0.0
+
+# 异步支持与实用工具
+asyncio
