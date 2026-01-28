@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI 并行比价助手</title>
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
+        .search-box { display: flex; gap: 10px; margin-bottom: 30px; }
+        input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 4px; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        #results { border-top: 1px solid #eee; padding-top: 20px; }
+        .card { border: 1px solid #eee; padding: 15px; margin-bottom: 10px; border-radius: 8px; }
+        .loading { display: none; color: #666; }
+    </style>
+</head>
+<body>
+    <h1>🚀 AI 并行比价助手</h1>
+    <div class="search-box">
+        <input type="text" id="productInput" placeholder="输入想比价的产品，例如：iPhone 16 Pro">
+        <button onclick="compare()">开始比价</button>
+    </div>
+    <div id="loading" class="loading">正在并发检索 Amazon, JD, Reddit... 请稍候（约 10-20 秒）</div>
+    <div id="results"></div>
+
+    <script>
+        async function compare() {
+            const product = document.getElementById('productInput').value;
+            const resDiv = document.getElementById('results');
+            const loading = document.getElementById('loading');
+            
+            if (!product) return alert("请输入产品名称");
+
+            loading.style.display = 'block';
+            resDiv.innerHTML = '';
+
+            try {
+                const response = await fetch('/compare', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ product_name: product })
+                });
+                const result = await response.json();
+                
+                loading.style.display = 'none';
+                result.data.forEach(item => {
+                    const card = `<div class="card">
+                        <h3>${item.platform} - ${item.title || '无标题'}</h3>
+                        <p>价格: <b>${item.price || '未查到'}</b></p>
+                        <p>${item.summary || ''}</p>
+                    </div>`;
+                    resDiv.innerHTML += card;
+                });
+            } catch (e) {
+                loading.style.display = 'none';
+                alert("请求失败，请检查后端是否运行");
+            }
+        }
+    </script>
+</body>
+</html>
